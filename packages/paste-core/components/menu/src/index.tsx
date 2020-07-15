@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {styled, css} from '@twilio-paste/styling-library';
 import {Box, BoxProps, safelySpreadBoxProps} from '@twilio-paste/box';
 import {Text} from '@twilio-paste/text';
 import {secureExternalLink} from '@twilio-paste/anchor';
@@ -23,6 +24,9 @@ export interface MenuItemProps extends MenuPrimitiveItemProps {
   href?: string;
   as?: any;
 }
+export interface MenuGroupProps {
+  label: string;
+}
 export type MenuSeparatorProps = MenuPrimitiveSeparatorProps;
 export type MenuButtonProps = MenuPrimitiveButtonProps & ButtonProps;
 export type SubMenuButtonProps = MenuPrimitiveButtonProps;
@@ -43,6 +47,8 @@ const StyledMenu = React.forwardRef<HTMLDivElement, BoxProps>(({style, ...props}
       maxWidth="size30"
       minWidth="size10"
       zIndex="zIndex20"
+      paddingTop="space20"
+      paddingBottom="space20"
       _focus={{outline: 'none'}}
       style={style}
       ref={ref}
@@ -50,39 +56,44 @@ const StyledMenu = React.forwardRef<HTMLDivElement, BoxProps>(({style, ...props}
   );
 });
 
-const StyledMenuItem = React.forwardRef<HTMLDivElement | HTMLAnchorElement, StyledMenuItemProps>(
-  ({children, ...props}, ref) => {
-    return (
-      <Box
-        {...(props.href && secureExternalLink(props.href))}
-        {...safelySpreadBoxProps(props)}
-        as="a"
-        display="block"
-        padding="space30"
-        paddingLeft="space50"
-        paddingRight="space50"
-        textDecoration="none"
-        _hover={{
-          cursor: 'pointer',
-        }}
-        _focus={{
-          outline: 'none',
-          backgroundColor: 'colorBackgroundPrimaryLightest',
-        }}
-        _disabled={{cursor: 'not-allowed'}}
-        ref={ref}
-      >
-        <Text
-          as="div"
-          color={props['aria-disabled'] ? 'colorTextWeaker' : 'colorText'}
-          textDecoration={props.tabIndex === 0 ? 'underline' : null}
-        >
-          {children}
-        </Text>
-      </Box>
-    );
-  }
+const StyledMenuItemText = styled.div(props =>
+  css({
+    color: props['aria-disabled'] ? 'colorTextWeaker' : 'colorText',
+    textDecoration: props.tabIndex === 0 ? 'underline' : null,
+  })
 );
+
+const StyledMenuItem = React.forwardRef<HTMLDivElement | HTMLAnchorElement, StyledMenuItemProps>((props, ref) => {
+  return (
+    <Box
+      {...(props.href && secureExternalLink(props.href))}
+      {...safelySpreadBoxProps(props)}
+      as="a"
+      display="block"
+      padding="space30"
+      paddingLeft="space50"
+      paddingRight="space50"
+      textDecoration="none"
+      _hover={{
+        cursor: 'pointer',
+      }}
+      _focus={{
+        outline: 'none',
+        backgroundColor: 'colorBackgroundPrimaryLightest',
+      }}
+      _disabled={{cursor: 'not-allowed'}}
+      ref={ref}
+    >
+      <Box as={StyledMenuItemText as any} {...props} />
+    </Box>
+  );
+});
+
+const StyledMenuGroup = styled.div({
+  [StyledMenuItemText]: {
+    paddingLeft: '20px',
+  },
+});
 
 const StyledMenuSeparator: React.FC<SeparatorProps> = props => {
   return <Separator {...props} orientation="horizontal" />;
@@ -99,6 +110,33 @@ const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(({as = StyledMe
 });
 MenuItem.displayName = 'MenuItem';
 export {MenuItem};
+
+const MenuGroup = React.forwardRef<HTMLDivElement, MenuGroupProps>(({label, children, ...props}, ref) => {
+  return (
+    <Box
+      {...safelySpreadBoxProps(props)}
+      as={StyledMenuGroup as any}
+      role="group"
+      aria-label={label}
+      textDecoration="none"
+      ref={ref}
+    >
+      <Text
+        as="div"
+        color={'colorText'}
+        role="presentation"
+        fontWeight="fontWeightBold"
+        paddingLeft="space50"
+        paddingRight="space50"
+      >
+        {label}
+      </Text>
+      <Box>{children}</Box>
+    </Box>
+  );
+});
+MenuGroup.displayName = 'MenuGroup';
+export {MenuGroup};
 
 const MenuSeparator: React.FC<MenuSeparatorProps> = props => {
   // as prop from reakit for some reason only accepts a string of `hr` but accepts components. any prevent type errors

@@ -7,7 +7,7 @@ import {MediaObject, MediaBody, MediaFigure} from '@twilio-paste/media-object';
 import {InformationIcon} from '@twilio-paste/icons/esm/InformationIcon';
 import {ChevronDownIcon} from '@twilio-paste/icons/esm/ChevronDownIcon';
 import {MoreIcon} from '@twilio-paste/icons/esm/MoreIcon';
-import {Menu, MenuButton, SubMenuButton, MenuItem, MenuSeparator, useMenuState} from '../src';
+import {Menu, MenuButton, SubMenuButton, MenuGroup, MenuItem, MenuSeparator, useMenuState} from '../src';
 
 const PlainMenu: React.FC<{}> = () => {
   const menu = useMenuState();
@@ -17,10 +17,12 @@ const PlainMenu: React.FC<{}> = () => {
         Preferences <ChevronDownIcon decorative />
       </MenuButton>
       <Menu {...menu} aria-label="Preferences">
-        <MenuItem {...menu}>Settings</MenuItem>
-        <MenuItem {...menu} disabled>
-          Extensions
-        </MenuItem>
+        <MenuGroup label="Main Settings">
+          <MenuItem {...menu}>Settings</MenuItem>
+          <MenuItem {...menu} disabled>
+            Extensions
+          </MenuItem>
+        </MenuGroup>
         <MenuSeparator {...menu} />
         <MenuItem {...menu}>Keyboard shortcuts</MenuItem>
       </Menu>

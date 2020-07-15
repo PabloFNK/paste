@@ -10,6 +10,13 @@ const getPresets = isDev => [
       autoLabel: isDev,
       labelFormat: '[local]',
       cssPropOptimization: !isDev,
+      importMap: {
+        '@twilio-paste/styling-library': {
+          styled: {
+            canonicalImport: ['@emotion/styled', 'default'],
+          },
+        },
+      },
     },
   ],
 ];
